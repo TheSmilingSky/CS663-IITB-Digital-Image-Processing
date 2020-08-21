@@ -6,3 +6,4 @@ Contains all the assignments and the course project submissions for Fall'20 offe
 | Utkarsh Agarwal |
 | Rahul Bukte |
 | Hitesh Kandala  |
+| Gagan Jain |
