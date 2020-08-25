@@ -73,12 +73,12 @@ def part_f(barbara):
     sin30 = math.sin(math.pi/6)
     for i in range(M):
         for j in range(N):
-            x = ((i-Cx)*cos30 + (j-Cy)*sin30 + Cx)
-            y = ((j-Cy)*cos30 - (i-Cx)*sin30 + Cy)
+            x = ((i-Cx)*cos30 - (j-Cy)*sin30 + Cx)
+            y = ((j-Cy)*cos30 + (i-Cx)*sin30 + Cy)
             x = math.ceil(x)
             y = math.ceil(y)
             if((x>0) and (x<M) and (y>0) and (y<N)):
-                new[x,y] = barbara[i,j]
+                new[i,j] = barbara[x,y]
 
     bilinbarbara = myBilinearInterpolation(new, M, N)
     imageWithColorbar(bilinbarbara)
@@ -96,11 +96,11 @@ if __name__=='__main__':
         
     circles = mpimg.imread('../data/circles_concentric.png')
     barbara = mpimg.imread('../data/barbaraSmall.png')
-    print(math.cos(math.pi/3))
+    
     part_a(circles)
     part_b(barbara)
-
+    part_c(barbara)
     part_f(barbara)
 
-    part_c(barbara)
+    
 
