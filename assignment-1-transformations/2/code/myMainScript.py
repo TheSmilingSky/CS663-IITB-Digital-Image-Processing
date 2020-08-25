@@ -5,9 +5,9 @@ from PIL import Image
 
 def imageWithColorbar(image,cmap='gray'):
     if len(image.shape)==2:
-        plt.imshow(image, cmap='gray')
+        plt.imshow(np.clip(image,0,255).astype(int), cmap='gray')
     else:
-        plt.imshow(image)
+        plt.imshow(np.clip(image,0,255).astype(int))
     plt.colorbar()
     plt.show()
 
@@ -21,13 +21,10 @@ def myForegroundMask(img, threshold):
 def myLinearContrastStretching(img):
     L = 255
     minI, maxI = np.ndarray.min(img), np.ndarray.max(img)
-    # print(maxI, minI)
-    img = (img*255/(maxI-minI)).astype(int)
-    # print(len(img.shape))
+    img = (img*255/(maxI-minI))
     img = np.multiply(img/2,img<L/8)+np.multiply(-L/4 + 3*img/2,np.multiply(img>=L/8,img<=7*L/8))+np.multiply(3*L/4+img/2,img>7*L/8) 
     minI, maxI = np.ndarray.min(img), np.ndarray.max(img)
-    img = (img*255/(maxI-minI)).astype(int)
-    # img.shape
+    img = (img*255/(maxI-minI))
     imageWithColorbar(img, cmap=None)
 
 def part_a(img):
@@ -45,10 +42,10 @@ if __name__=='__main__':
     canyon = mpimg.imread('../data/canyon.png')
     retina = mpimg.imread('../data/retina.png')
     church = mpimg.imread('../data/church.png')
-    # print(church.shape)
     chestXray = mpimg.imread('../data/chestXray.png')
     statue = mpimg.imread('../data/statue.png')
-    imgs = [barbara,TEM,canyon,church,chestXray]
-    # imgs = [church]
-    # part_a(statue)
-    part_b(imgs)
+    
+    part_a(statue)
+
+    imgs_part_b = [barbara,TEM,canyon,church,chestXray]
+    part_b(imgs_part_b)
