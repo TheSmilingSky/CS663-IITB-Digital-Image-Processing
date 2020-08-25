@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.image as mpimg
 
+
 def myShrinkImageByFactorD(img, k):
     return img[::k,::k]
 
@@ -40,10 +41,32 @@ def part_b(barbara):
     enlarged_barbara = myBilinearInterpolation(barbara,3*M-2,2*N-1)
     imageWithColorbar(enlarged_barbara)    
 
+def part_f(barbara):
+    ##################### Part(f) ########################
+    imageWithColorbar(barbara)
+    M, N = barbara.shape
+    new = np.zeros((M,N))
+    Cx, Cy = math.ceil(M/2), math.ceil(N/2)
+    cos30 = math.cos(math.pi/6)
+    sin30 = math.sin(math.pi/6)
+    for i in range(M):
+        for j in range(N):
+            x = ((i-Cx)*cos30 + (j-Cy)*sin30 + Cx)
+            y = ((j-Cy)*cos30 - (i-Cx)*sin30 + Cy)
+            x = math.ceil(x)
+            y = math.ceil(y)
+            if((x>0) and (x<M) and (y>0) and (y<N)):
+                new[x,y] = barbara[i,j]
+
+    bilinbarbara = myBilinearInterpolation(new, M, N)
+    imageWithColorbar(bilinbarbara)
+
+
 if __name__=='__main__':
         
     circles = mpimg.imread('../data/circles_concentric.png')
     barbara = mpimg.imread('../data/barbaraSmall.png')
-
+    print(math.cos(math.pi/3))
     part_a(circles)
     part_b(barbara)
+    part_f(barbara)
