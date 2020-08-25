@@ -4,10 +4,7 @@ import matplotlib.image as mpimg
 from PIL import Image
 
 def imageWithColorbar(image,cmap='gray'):
-    if len(image.shape)==2:
-        plt.imshow(np.clip(image,0,255).astype(int), cmap='gray')
-    else:
-        plt.imshow(np.clip(image,0,255).astype(int))
+    plt.imshow(image, cmap, interpolation = None)
     plt.colorbar()
     plt.show()
 
@@ -25,7 +22,12 @@ def myLinearContrastStretching(img):
     img = np.multiply(img/2,img<L/8)+np.multiply(-L/4 + 3*img/2,np.multiply(img>=L/8,img<=7*L/8))+np.multiply(3*L/4+img/2,img>7*L/8) 
     minI, maxI = np.ndarray.min(img), np.ndarray.max(img)
     img = (img*255/(maxI-minI))
-    imageWithColorbar(img, cmap=None)
+    if len(img.shape)==2:
+        plt.imshow(np.clip(img,0,255).astype(int), cmap='gray')
+    else:
+        plt.imshow(np.clip(img,0,255).astype(int))
+    plt.colorbar()
+    plt.show()
 
 def part_a(img):
     imageWithColorbar(img)
@@ -33,6 +35,7 @@ def part_a(img):
 
 def part_b(imgs):
     for i in range(len(imgs)):
+        imageWithColorbar(imgs[i])
         myLinearContrastStretching(imgs[i])
 
 if __name__=='__main__':
