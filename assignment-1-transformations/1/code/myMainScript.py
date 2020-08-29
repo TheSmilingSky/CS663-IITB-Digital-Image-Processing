@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.image as mpimg
 
-
 def myShrinkImageByFactorD(img, k):
     return img[::k,::k]
 
@@ -26,20 +25,15 @@ def myNearestNeighborInterpolation(img, P, Q):
     new = np.zeros((P, Q))
     
     r,c = math.ceil(P/M), math.ceil(Q/N)
-    new[::r, ::c] = img
-    for j in range(0,Q,c):
-        for i in range(0,P-r,r):
-            new[i+1,j] = new[i,j]
-            new[i+r-1, j] = new[i+r,j]
-
-    for j in range(0, Q-c, c):
-        for i in range(0, P-r,r):
-            new[i+1,j+1] = new[i,j]
-            new[i+r-1, j+c-1] = new[i+r, j]
-    
-    for i in range(0,P, r):
-        for j in range(0,Q-c,c):
-            new[i, j+1] = new[i, j]
+    for i in range(P):
+        ii = round(i/r)
+        if ii<1:
+            ii = 1
+        for j in range(Q):
+            jj = round(j/c)
+            if jj<1:
+                jj = 1
+            new[i,j] = img[ii,jj]
 
     return new
 
@@ -89,69 +83,80 @@ def myBicubicInterpolation(img, P, Q):
             new[i+1,j+1] = float(val)
     return new
 
+def myImageRotation(img, theta):
+    M, N = img.shape
+    new = np.zeros((M,N))
+    Cx, Cy = math.ceil(M/2), math.ceil(N/2)
+    c = math.cos(theta)
+    s = math.sin(theta)
+    for i in range(M):
+        for j in range(N):
+            x = ((i-Cx)*c - (j-Cy)*s + Cx)
+            y = ((j-Cy)*c + (i-Cx)*s + Cy)
+            x = math.ceil(x)
+            y = math.ceil(y)
+            if((x>0) and (x<M) and (y>0) and (y<N)):
+                new[i,j] = img[x,y]
+
+    return myBilinearInterpolation(new, M, N)
+
 def imageWithColorbar(image,cmap='gray'):
     image = plt.imshow(image, cmap, interpolation = None)
     plt.colorbar()
     plt.show()
 
-def part_a(circles):
+def part_a(img):
     ##################### Part(a) ########################
-    imageWithColorbar(circles)
-    circles_shrink2 = myShrinkImageByFactorD(np.array(circles),2)
-    circles_shrink3 = myShrinkImageByFactorD(np.array(circles),3)
-    imageWithColorbar(circles_shrink2)
-    imageWithColorbar(circles_shrink3)
+    imageWithColorbar(img)
+    shrink2 = myShrinkImageByFactorD(np.array(img),2)
+    shrink3 = myShrinkImageByFactorD(np.array(img),3)
+    imageWithColorbar(shrink2)
+    imageWithColorbar(shrink3)
 
-def part_b(barbara):
+def part_b(img):
     ##################### Part(b) ########################
-    imageWithColorbar(barbara)
-    M,N = barbara.shape
-    enlarged_barbara = myBilinearInterpolation(barbara,3*M-2,2*N-1)
-    imageWithColorbar(enlarged_barbara)    
+    imageWithColorbar(img)
+    M,N = img.shape
+    enlarged = myBilinearInterpolation(img,3*M-2,2*N-1)
+    imageWithColorbar(enlarged)    
 
-def part_c(barbara):
+def part_c(img):
     ##################### Part(c) ########################
-    imageWithColorbar(barbara)
-    M,N = barbara.shape
-    enlarged_barbara = myNearestNeighborInterpolation(barbara,3*M-2,2*N-1)
-    imageWithColorbar(enlarged_barbara)    
+    imageWithColorbar(img)
+    M,N = img.shape
+    enlarged = myNearestNeighborInterpolation(img,3*M-2,2*N-1)
+    imageWithColorbar(enlarged)    
 
-def part_d(barbara):
-    ##################### Part(b) ########################
-    imageWithColorbar(barbara)
-    M,N = barbara.shape
-    enlarged_barbara = myBicubicInterpolation(barbara,3*M-2,2*N-1)
-    imageWithColorbar(enlarged_barbara) 
-    
-def part_f(barbara):
+def part_d(img):
+    ##################### Part(d) ########################
+    imageWithColorbar(img)
+    M,N = img.shape
+    enlarged = myBicubicInterpolation(img,3*M-2,2*N-1)
+    imageWithColorbar(enlarged) 
+
+def part_e(img):
+    ##################### Part(e) ########################
+    M,N = img.shape
+    imageWithColorbar(img,'jet')
+    imageWithColorbar(myBilinearInterpolation(img,5*M-4,4*N-3),'jet')
+    imageWithColorbar(myNearestNeighborInterpolation(img,5*M-4,4*N-3),'jet')
+    imageWithColorbar(myBicubicInterpolation(img,5*M-4,4*N-3),'jet')
+
+def part_f(img):
     ##################### Part(f) ########################
-    imageWithColorbar(barbara)
-    M, N = barbara.shape
-    new = np.zeros((M,N))
-    Cx, Cy = math.ceil(M/2), math.ceil(N/2)
-    cos30 = math.cos(math.pi/6)
-    sin30 = math.sin(math.pi/6)
-    for i in range(M):
-        for j in range(N):
-            x = ((i-Cx)*cos30 - (j-Cy)*sin30 + Cx)
-            y = ((j-Cy)*cos30 + (i-Cx)*sin30 + Cy)
-            x = math.ceil(x)
-            y = math.ceil(y)
-            if((x>0) and (x<M) and (y>0) and (y<N)):
-                new[i,j] = barbara[x,y]
-
-    bilinbarbara = myBilinearInterpolation(new, M, N)
-    imageWithColorbar(bilinbarbara) 
+    imageWithColorbar(img)
+    rotated = myImageRotation(img, math.pi/6)
+    imageWithColorbar(rotated) 
 
 if __name__=='__main__':
         
     circles = mpimg.imread('../data/circles_concentric.png')
     barbara = mpimg.imread('../data/barbaraSmall.png')
     
-    # part_a(circles)
-    # part_b(barbara)
-    # part_c(barbara)
-    # part_f(barbara)
+    part_a(circles)
+    part_b(barbara)
+    part_c(barbara)
     part_d(barbara)
-    
+    part_e(barbara[:20,:20])
+    part_f(barbara)
 
