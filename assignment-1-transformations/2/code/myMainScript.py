@@ -8,16 +8,16 @@ def imageWithColorbar(image,cmap='gray'):
     plt.colorbar()
     plt.show()
 
-def plotImages(im1, im2, cmap=None):
-    _, axes = plt.subplots(1,2)
-    axes[0].imshow(im1, cmap)
-    axes[1].imshow(im2, cmap)
+def plotImages(images, cmap=None):
+    _, axes = plt.subplots(1,len(images))
+    for i in range(len(images)):
+        axes[i].imshow(images[i], cmap)
     plt.show()
 
-def plotHist(h1, h2):
-    _, axes = plt.subplots(1,2)
-    axes[0].bar(list(range(256)),h1)
-    axes[1].bar(list(range(256)),h2)
+def plotHist(hists):
+    _, axes = plt.subplots(1,len(hists))
+    for i in range(len(hists)):
+        axes[i].bar(list(range(256)),hists[i])
     plt.show()
 
 def myForegroundMask(img, threshold):
@@ -62,7 +62,30 @@ def myHE(img):
             Y[i,j] = sk[img[i,j]]
     HE = imhist(Y)
     return Y, H, HE
-    
+
+def myHM(img, img_ref):
+    img_ref = np.clip(img_ref*255,0,255).astype(int)
+    H_ref = imhist(img_ref)
+    cdf_ref = np.array([sum(H_ref[:i+1]) for i in range(len(H_ref))])
+    sk_ref = np.uint8(255*cdf_ref)
+
+    img = np.clip(img*255,0,255).astype(int)
+    H = imhist(img)
+    cdf = np.array([sum(H[:i+1]) for i in range(len(H))])
+    sk = np.uint8(255*cdf)
+
+    num = [i for i in range(256)]
+    new_sk = np.interp(sk, sk_ref, num)
+    m,n = img.shape
+    Y = np.zeros_like(img)
+    for i in range(m):
+        for j in range(n):
+                Y[i,j] = new_sk[img[i,j]]
+
+    H_new = imhist(Y)
+
+    return Y, H_ref, H, H_new 
+
 def part_a(img):
     imageWithColorbar(img)
     myForegroundMask(img, 0.1)
@@ -72,21 +95,39 @@ def part_b(imgs):
         imageWithColorbar(imgs[i])
         myLinearContrastStretching(imgs[i])
 
-def part_c(imgs):
+def part_c(imgs, retina, retina_ref):
     for img in imgs:
         if len(img.shape)==2:
             eqImg, H, HE = myHE(img)
-            plotImages(img, eqImg, 'gray')
-            plotHist(H, HE)
+            plotImages([img, eqImg], 'gray')
+            plotHist([H, HE])
         else:
             R, HR, HER = myHE(img[:,:,0])
             G, HG, HEG = myHE(img[:,:,1])
             B, HB, HEB = myHE(img[:,:,2])
+            
             eqImg = np.dstack((R,G,B))
-            plotImages(img, eqImg)
-            plotHist(HR, HER)
-            plotHist(HG, HEG)
-            plotHist(HB, HEB)
+            plotImages([img, eqImg])
+            plotHist([HR, HER])
+            plotHist([HG, HEG])
+            plotHist([HB, HEB])
+
+def part_d(img, img_ref):
+    Rm, HRR, HR, HnR = myHM(img[:,:,0], img_ref[:,:,0])
+    Gm, HRG, HG, HnG = myHM(img[:,:,1], img_ref[:,:,1])
+    Bm, HRB, HB, HnB = myHM(img[:,:,2], img_ref[:,:,2])
+    
+    mImg = np.dstack((Rm,Gm,Bm))
+
+    R, HR, HER = myHE(img[:,:,0])
+    G, HG, HEG = myHE(img[:,:,1])
+    B, HB, HEB = myHE(img[:,:,2])
+    
+    eqImg = np.dstack((R,G,B))
+
+    plotImages([img,mImg,eqImg])
+    # plotHist(HRR, HR, HnR)
+
 
 if __name__=='__main__':
 
@@ -97,8 +138,11 @@ if __name__=='__main__':
     church = mpimg.imread('../data/church.png')
     chestXray = mpimg.imread('../data/chestXray.png')
     statue = mpimg.imread('../data/statue.png')
+    retina_ref = mpimg.imread('../data/retinaRef.png')
     imgs = [barbara,TEM,canyon,church,chestXray]
     
     part_a(statue)
     part_b(imgs)
     part_c(imgs)
+    part_d(retina, retina_ref)
+    
