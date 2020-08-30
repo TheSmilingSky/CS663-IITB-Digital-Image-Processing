@@ -27,12 +27,8 @@ def myNearestNeighborInterpolation(img, P, Q):
     r,c = math.ceil(P/M), math.ceil(Q/N)
     for i in range(P):
         ii = round(i/r)
-        if ii<1:
-            ii = 1
         for j in range(Q):
             jj = round(j/c)
-            if jj<1:
-                jj = 1
             new[i,j] = img[ii,jj]
 
     return new
