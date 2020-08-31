@@ -8,7 +8,7 @@ def imageWithColorbar(image,cmap='gray'):
     plt.colorbar()
     plt.show()
 
-def plotImages(images, cmap=None):
+def plotImages(images, cmap='gray'):
     _, axes = plt.subplots(1,len(images))
     for i in range(len(images)):
         axes[i].imshow(images[i], cmap)
@@ -84,7 +84,52 @@ def myHM(img, img_ref):
 
     H_new = imhist(Y)
 
-    return Y, H_ref, H, H_new 
+    return Y, H_ref, H, H_new
+
+def sliding_window(image, stepSize, windowSize):
+    # slide a window across the image
+    for y in range(0, image.shape[0], stepSize):
+        for x in range(0, image.shape[1], stepSize):
+            # yield the current window
+            yield (image[y:y + windowSize[1], x:x + windowSize[0]])
+
+
+def myCLAHE(image, cliplimit, windowsize):
+    window_size = windowsize
+    final = np.zeros_like(image)
+    imge = np.clip(image*255,0,255).astype(int)
+    H_orig = imhist(imge)
+
+    for y in range(0, image.shape[0], 10):
+        for x in range(0, image.shape[1], 10):
+            # yield the current window
+            img = (image[y:y + window_size[1], x:x + window_size[0]])
+
+            clipped = 0
+            img = np.clip(img*255,0,255).astype(int)
+            H = imhist(img)
+            # print(max(H))
+            for i in range(len(H)):
+                if (H[i]>cliplimit):
+                    clipped += H[i] - cliplimit
+                    H[i] = cliplimit
+
+            clip_reserve = clipped/len(H)
+            for i in range(len(H)):
+                H[i] += clip_reserve
+
+            cdf = np.array([sum(H[:i+1]) for i in range(len(H))])
+            sk = np.uint8(255*cdf)
+            m,n = img.shape
+            Y = np.zeros_like(img)
+            for i in range(m):
+                for j in range(n):
+                    Y[i,j] = sk[img[i,j]]
+
+            final[y:y + window_size[1], x:x + window_size[0]] = Y
+
+    return final, H_orig
+
 
 def part_a(img):
     imageWithColorbar(img)
@@ -95,7 +140,7 @@ def part_b(imgs):
         imageWithColorbar(imgs[i])
         myLinearContrastStretching(imgs[i])
 
-def part_c(imgs, retina, retina_ref):
+def part_c(imgs):
     for img in imgs:
         if len(img.shape)==2:
             eqImg, H, HE = myHE(img)
@@ -128,6 +173,18 @@ def part_d(img, img_ref):
     plotImages([img,mImg,eqImg])
     # plotHist(HRR, HR, HnR)
 
+def part_e(img):
+    if len(img.shape) == 2:
+        clahe_img10, H = myCLAHE(img, 1, (30,30))
+        clahe_img100, H = myCLAHE(img, 1, (100,100))
+        plotImages([img, clahe_img10, clahe_img100])
+    else:
+        R = myCLAHE(img[:,:,0], 0.005)
+        G = myCLAHE(img[:,:,1], 0.005)
+        B = myCLAHE(img[:,:,2], 0.005)
+
+        clahe_img = np.dstack((R,G,B))
+        plotImages([img, clahe_img])
 
 if __name__=='__main__':
 
@@ -145,4 +202,4 @@ if __name__=='__main__':
     part_b(imgs)
     part_c(imgs)
     part_d(retina, retina_ref)
-    
+    part_e(barbara)
