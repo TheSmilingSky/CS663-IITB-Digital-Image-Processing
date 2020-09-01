@@ -174,17 +174,24 @@ def part_d(img, img_ref):
     # plotHist(HRR, HR, HnR)
 
 def part_e(img):
-    if len(img.shape) == 2:
-        clahe_img10, H = myCLAHE(img, 1, (30,30))
-        clahe_img100, H = myCLAHE(img, 1, (100,100))
-        plotImages([img, clahe_img10, clahe_img100])
-    else:
-        R = myCLAHE(img[:,:,0], 0.005)
-        G = myCLAHE(img[:,:,1], 0.005)
-        B = myCLAHE(img[:,:,2], 0.005)
+    for img in imgs_2:
+        if len(img.shape) == 2:
+            clahe_low, H = myCLAHE(img, 1, (30,30))
+            clahe, H = myCLAHE(img, 0.005, (60,60))
+            clahe_high, H = myCLAHE(img, 1, (100,100))
+            clahe_thresh, _ = myCLAHE(img, 0.0025, (60,60))
+            plotImages([img, clahe_high, clahe_low, clahe])
+            plotImages([img, clahe, clahe_thresh])
+        else:
+            R, _ = myCLAHE(img[:,:,0], 1, (100,100))
+            R = np.clip(R*255,0,255).astype(int)
+            G, _ = myCLAHE(img[:,:,1], 1, (100,100))
+            G = np.clip(G*255,0,255).astype(int)
+            B, _ = myCLAHE(img[:,:,2], 1, (100,100))
+            B = np.clip(B*255,0,255).astype(int)
 
-        clahe_img = np.dstack((R,G,B))
-        plotImages([img, clahe_img])
+            clahe = np.dstack((R,G,B))
+            plotImages([img, clahe])
 
 if __name__=='__main__':
 
@@ -197,9 +204,10 @@ if __name__=='__main__':
     statue = mpimg.imread('../data/statue.png')
     retina_ref = mpimg.imread('../data/retinaRef.png')
     imgs = [barbara,TEM,canyon,church,chestXray]
+    imgs_2 = [barbara,TEM,chestXray]
     
     part_a(statue)
     part_b(imgs)
     part_c(imgs)
     part_d(retina, retina_ref)
-    part_e(barbara)
+    part_e(imgs_2)
