@@ -59,9 +59,7 @@ def bi_histogram(img):
 
 
 if __name__ == '__main__':
-    barbara = mpimg.imread('../barbara.png')
-    chestXray = mpimg.imread('../chestXray.png')
-    statue = mpimg.imread('../statue.png')
-    bi_img = bi_histogram(statue)
-    eqImg, _, _ = myHE(statue)
-    plotImages([statue, bi_img, eqImg])
+    img = mpimg.imread('third.jpg')
+    bi_img = bi_histogram(img[:,:,0])
+    eqImg, _, _ = myHE(img[:,:,0])
+    plotImages([img, bi_img, eqImg])
