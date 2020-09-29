@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
 
+np.random.seed(0)
+
 def imageWithColorbar(image,cmap='gray'):
     plt.imshow(image, cmap, interpolation = None)
     plt.colorbar()
@@ -53,23 +55,34 @@ def bilateralFilter(img, window, sigma_s, sigma_i):
 
     return filtered_img
 
-def padding(img, window, patch):
-    pad_img = np.pad(img, np.floor(window/2)+np.floor(patch/2), 'edge')
+def gaussianMask(window, sigma_s):
+    x_m = [i for i in range(int(-1*np.floor(window/2)), int(np.floor(window/2)+1))]
+    x,y = np.meshgrid(x_m, x_m)
+    G_s = np.exp(-(np.square(x)+np.square(y))/(2*sigma_s*sigma_s))
+    return G_s
 
 if __name__=='__main__':
+    
     data_dict = mat73.loadmat('../data/barbara.mat')
     barbara = data_dict['imageOrig']
-    grass = mpimg.imread('../data/grass.png')
-    honey = mpimg.imread('../data/honeyCombReal.png')
     corr_barbara = corrupt_img(barbara)
-    corr_grass = corrupt_img(grass)
-    corr_honey = corrupt_img(honey)
-    filter_barbara = bilateralFilter(corr_barbara, 50, 10, 10)
-    filter_grass = bilateralFilter(corr_grass, 9, 0.81, 0.18)
-    filter_honey = bilateralFilter(corr_honey, 9, 0.88, 0.16)
+    filter_barbara = bilateralFilter(corr_barbara, 9, 1.4, 10.2)
     plotImages([barbara, corr_barbara, filter_barbara])
-    plotImages([grass, corr_grass, filter_grass])
-    plotImages([honey, corr_honey, filter_honey])
     print("RMSD1 : ", get_rmsd(barbara,filter_barbara))
+    
+    grass = mpimg.imread('../data/grass.png')
+    corr_grass = corrupt_img(grass)
+    filter_grass = bilateralFilter(corr_grass, 9, 0.729, 0.18)
+    plotImages([grass, corr_grass, filter_grass])
     print("RMSD2 : ", get_rmsd(grass,filter_grass))
+    
+    honey = mpimg.imread('../data/honeyCombReal.png')
+    corr_honey = corrupt_img(honey)
+    filter_honey = bilateralFilter(corr_honey, 9, 0.88, 0.16)
+    plotImages([honey, corr_honey, filter_honey])
     print("RMSD3 : ", get_rmsd(honey,filter_honey))
+
+    mask = gaussianMask(9, 1.4)
+    plt.imshow(mask, 'gray', interpolation = None)
+    plt.colorbar()
+    plt.show()
