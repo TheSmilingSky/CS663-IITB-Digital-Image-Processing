@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
-import math
-from math import floor
+from math import floor, sqrt
+import mat73 
 
 def imageWithColorbar(image,cmap='gray'):
     plt.imshow(image, cmap, interpolation = None)
@@ -15,6 +15,12 @@ def plotImages(images, cmap='gray'):
     for i in range(len(images)):
         axes[i].imshow(images[i], cmap)
     plt.show()
+
+def get_rmsd(img1, img2):
+    assert img1.shape==img2.shape, "shape mismatch"
+    print(np.size(img1))
+    rmsd = sqrt(np.sum(np.square(img1-img2))/(np.size(img1,0)*np.size(img1,1)))
+    return rmsd
 
 def corrupt_img(img):
     sigma = 0.05 * (np.max(img)-np.min(img))
@@ -33,10 +39,10 @@ def myPatchBasedFiltering(img, var):
 	pad = floor(window/2)+floor(patchSize/2)
 	paddedImage = myPadding(img, window, patchSize)
 	gaussianMask = np.zeros((patchSize,patchSize))
-	sigma = 1
-	for x in range(-floor(patchSize/2),floor(patchSize/2)):
-		for y in range(-floor(patchSize/2),floor(patchSize/2)):
-			gaussianMask[x,y] = np.exp(-(x**2-y**2)/2*sigma**2)
+	sigma = 1.5
+	x_m = [i for i in range(int(-1*np.floor(patchSize/2)), int(np.floor(patchSize/2)+1))]
+	x,y = np.meshgrid(x_m, x_m)
+	gaussianMask = np.exp(-(np.square(x)+np.square(y))/(2*sigma*sigma))
 
 	for i in range(pad, img.shape[0]+pad):
 		i1 = max(i - floor(window/2), 0)
@@ -63,21 +69,31 @@ def myPatchBasedFiltering(img, var):
 					pj2 = min(n + floor(patchSize/2),paddedImage.shape[1])
 
 					patch1 = np.multiply(paddedImage[pi1:pi2+1,pj1:pj2+1],gaussianMask)
-					W[m-i1,n-j1] = np.exp(-sum(sum(np.square(patch - patch1)))/sigma**2)
+					W[m-i1,n-j1] = np.exp(-sum(sum(np.square(patch - patch1)))/var**2)
 			# print(np.multiply(W,borders[i1:i2+1,j1:j2+1]))
 
 			result[i-pad,j-pad] = sum(sum(np.multiply(W,paddedImage[i1:i2+1,j1:j2+1])))/sum(sum(W))
-		print("done", i, img.shape[0])
+		# print("done", i-pad, img.shape[0])
 	return result
 
 
 
 if __name__=='__main__':
+    data_dict = mat73.loadmat('../data/barbara.mat')
+    barbara = data_dict['imageOrig']
+    barbara = barbara[::2,::2]
     grass = mpimg.imread('../data/grass.png')
     honey = mpimg.imread('../data/honeyCombReal.png')
+    corr_barbara = corrupt_img(barbara)
     corr_grass = corrupt_img(grass)
     corr_honey = corrupt_img(honey)
-    filter_grass = myPatchBasedFiltering(corr_grass, 0.15)
-    filter_honey = myPatchBasedFiltering(corr_honey, 0.15)
+    filter_barbara = myPatchBasedFiltering(barbara, 0.15)
+    plotImages([barbara, corr_barbara, filter_barbara])
+    print("RMSD1 : ", get_rmsd(barbara,filter_barbara))
+    filter_grass = myPatchBasedFiltering(corr_grass, 0.16)
     plotImages([grass, corr_grass, filter_grass])
+    print("RMSD2 : ", get_rmsd(grass,filter_grass))
+    filter_honey = myPatchBasedFiltering(corr_honey, 0.14) 
     plotImages([honey, corr_honey, filter_honey])
+    print("RMSD3 : ", get_rmsd(honey,filter_honey))
+
