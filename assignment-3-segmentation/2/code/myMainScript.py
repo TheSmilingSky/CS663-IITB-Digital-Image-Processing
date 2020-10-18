@@ -12,7 +12,7 @@ def rescale(img, factor):
 
 def myMeanShiftSegmentation(image, h_spatial, h_intensity, num_neighbours, max_iter):
 
-    img_resized = rescale(image, 2)
+    img_resized = rescale(image, 20)
     segmented = image
     rows, columns = np.size(image,0), np.size(image,1)
     attr_size = rows*columns
@@ -34,8 +34,9 @@ def myMeanShiftSegmentation(image, h_spatial, h_intensity, num_neighbours, max_i
             print(i/attr_size*100)
             weights = np.exp(-(np.square(distances[i,:]))/2)
             sum_weights = np.sum(weights, axis=0)
-            weights = np.transpose(weights)
-            weight_arr = np.concatenate((weights, weights, weights))
+            weights = np.transpose(weights).reshape(-1,1)
+            print(weights.shape)
+            weight_arr = np.concatenate((weights, weights, weights),axis=1)
             print(weight_arr.shape)
             attr[i, 2:5] = np.sum(np.multiply(weight_arr,temp_attr[indices[i,:],2:5]))/sum_weights
 
