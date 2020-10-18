@@ -22,7 +22,7 @@ xlabel = round(330*scaling);
 ylabel = round(330*scaling);
 k = 2;
 [D, img_mask, bg_mask, img] = mySpatiallyVaryingKernel(bird, d_thres, xlabel, ylabel, k);
-disp(img);
+%disp(img);
 img_mask = double(img_mask)/255;
 foreground = double(img);
 background = double(img);
@@ -91,7 +91,7 @@ toc;
 
 tic;
 %% For flower ->
-d_thres = 10;
+d_thres = 20;
 % r_min = round(65*scaling2);
 % r_max = round(215*scaling2);
 % c_min = round(150*scaling2);

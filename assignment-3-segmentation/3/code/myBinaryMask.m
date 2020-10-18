@@ -7,7 +7,7 @@ function [img_mask,out_img] = myBinaryMask(img, xlabel, ylabel, k)
     kdes = clustered(xlabel,ylabel);
     for i=1:rows
         for j=1:columns
-            if clustered(i,j)==kdes
+            if clustered(i,j)== kdes
                 mask(i,j,:) = 1;
             else 
                 mask(i,j,:) = 0;
