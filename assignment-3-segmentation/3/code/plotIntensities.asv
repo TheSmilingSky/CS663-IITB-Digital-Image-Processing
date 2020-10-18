@@ -1,0 +1,18 @@
+function plotIntensities(img)
+    r = reshape(img(:,:,1), [1, size(img,1)*size(img,2)]);
+    g = reshape(img(:,:,2), [1, size(img,1)*size(img,2)]);
+    b = reshape(img(:,:,3), [1, size(img,1)*size(img,2)]);
+    
+    [idx,C] = kmeans([r,g,b]',3);
+    figure;
+    plot(X(idx==1,1),X(idx==1,2),'r.','MarkerSize',12)
+    hold on
+    plot(X(idx==2,1),X(idx==2,2),'b.','MarkerSize',12)
+    g
+    scatter3(r,g,b,'.');
+    axis([0,1,0,1,0,1]);
+    xlabel("Red");
+    ylabel("Green");
+    zlabel("Blue");
+    
+end
