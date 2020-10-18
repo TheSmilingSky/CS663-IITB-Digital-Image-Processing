@@ -3,10 +3,10 @@
 tic;
 %% Your code here
 
-bird = imread('birds1.png');
+bird = imread('../images/birds1.png');
 scaling = 0.4;
 bird = imresize(bird, scaling);
-flower = imread('flower1.png');
+flower = imread('../images/flower1.png');
 scaling2 = 0.7;
 flower = imresize(flower, scaling2);
 
@@ -18,8 +18,8 @@ d_thres = 40;
 % c_min = round(230*scaling);
 % c_max = round(770*scaling);
 % threshold = 180;
-xlabel = 200;
-ylabel = 200;
+xlabel = round(330*scaling);
+ylabel = round(330*scaling);
 k = 2;
 [D, img_mask, bg_mask, img] = mySpatiallyVaryingKernel(bird, d_thres, xlabel, ylabel, k);
 img_mask = double(img_mask)/255;
@@ -96,8 +96,8 @@ d_thres = 20;
 % c_min = round(150*scaling2);
 % c_max = round(280*scaling2);
 % threshold = 100;
-xlabel = 330;
-ylabel = 330;
+xlabel = round(120*scaling2);
+ylabel = round(200*scaling2);
 k = 2;
 [D, img_mask, bg_mask, img] = mySpatiallyVaryingKernel(flower, d_thres, xlabel, ylabel, k);
 img_mask = double(img_mask)/255;
