@@ -1,9 +1,9 @@
 function myBinaryMask(img, xlabel, ylabel, k)
+    mask = img;
     wait = waitbar(0, "Clustering");
     clustered = imsegkmeans(img,k);
-    rows = size(img,1);
-    columns = size(img,2);
-    mask = img;
+    rows = size(mask,1);
+    columns = size(mask,2);
     kdes = clustered(xlabel,ylabel);
     for i=1:rows
         for j=1:columns
@@ -22,3 +22,4 @@ function myBinaryMask(img, xlabel, ylabel, k)
     imshow((1-mask).*img);
     close(wait);
 end
+
