@@ -101,6 +101,7 @@ xlabel = round(120*scaling2);
 ylabel = round(200*scaling2);
 k = 2;
 [D, img_mask, bg_mask, img] = mySpatiallyVaryingKernel(flower, d_thres, xlabel, ylabel, k);
+disp(img);
 img_mask = double(img_mask)/255;
 foreground = double(img);
 background = double(img);

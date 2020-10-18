@@ -9,7 +9,7 @@ img_g = rgb2gray(img);
 bg_mask = zeros(size(img_g));
 
 %% Remaining function
-[img_mask, img] = myBinaryMask(img, xlabel, ylabel, k);
+[img_mask, ~] = myBinaryMask(img, xlabel, ylabel, k);
 img_mask = im2double(img_mask);
 img_mask = rgb2gray(img_mask);
 img = im2double(img);
