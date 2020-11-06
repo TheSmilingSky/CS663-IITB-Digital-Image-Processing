@@ -34,7 +34,7 @@ fig1 = figure(1);
 for k_idx = 1:len_k
     k = kvals(k_idx);
     reconst_img = U_k(:,1:k)*alpha_k(1:k,1);
-    I = reshape(reconst_img,[],92);
+    I = histeq(reshape(reconst_img,[],92));
     subplot(3,3,k_idx), imshow(I);
     title(strcat('k=',num2str(k)));
 end
