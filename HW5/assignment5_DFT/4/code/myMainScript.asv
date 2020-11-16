@@ -24,8 +24,8 @@ for i=1:2*m
         if ((i-m)^2 + (j-n)^2 <= vars(2)^2)
             H12(i,j) = 1;
         end
-        H21(i,j) = exp(-((i-m)^2 + (j-n)^2)/(2*vars(1)^2));
-        H22(i,j) = exp(-((i-m)^2 + (j-n)^2)/(2*vars(2)^2));
+        H21 = exp(-((i-m)^2 + (j-n)^2)/(2*vars(1)^2));
+        H22 = exp(-((i-m)^2 + (j-n)^2)/(2*vars(2)^2));
     end
 end
 
@@ -56,7 +56,7 @@ colormap jet;
 colorbar;
 
 figure;
-imshow(H12,[min(abs(H12(:))) max(abs(H12(:)))]);
+imshow(H12,[min(abs(H11(:))) max(abs(H11(:)))]);
 colormap jet;
 colorbar;
 
