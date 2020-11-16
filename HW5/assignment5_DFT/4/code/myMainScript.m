@@ -32,23 +32,23 @@ end
 img11 = ifft2(ifftshift(fimg.*H11));
 img11 = img11(m/2+1:3*m/2,n/2+1:3*n/2);
 figure;
-imshow(img11,[min(abs(img11(:))) max(abs(img11(:)))]);
+imshow(real(img11),[min(abs(img11(:))) max(abs(img11(:)))]);
 
 img12 = ifft2(ifftshift(fimg.*H12));
 img12 = img12(m/2+1:3*m/2,n/2+1:3*n/2);
 figure;
-imshow(img12,[min(abs(img12(:))) max(abs(img12(:)))]);
+imshow(real(img12),[min(abs(img12(:))) max(abs(img12(:)))]);
 toc;
 
 img21 = ifft2(ifftshift(fimg.*H21));
 img21 = img21(m/2+1:3*m/2,n/2+1:3*n/2);
 figure;
-imshow(img21,[min(abs(img21(:))) max(abs(img21(:)))]);
+imshow(real(img21),[min(abs(img21(:))) max(abs(img21(:)))]);
 
 img22 = ifft2(ifftshift(fimg.*H22));
 img22 = img22(m/2+1:3*m/2,n/2+1:3*n/2);
 figure;
-imshow(img22,[min(abs(img22(:))) max(abs(img22(:)))]);
+imshow(real(img22),[min(abs(img22(:))) max(abs(img22(:)))]);
 
 figure;
 imshow(H11,[min(abs(H11(:))) max(abs(H11(:)))]);
